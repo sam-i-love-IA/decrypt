@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECRYPT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<button id="bugReportButton" class="bugReportButton">SEGNALA BUG</button>
+
+<main class="app">
+    <h1>DECRYPT</h1>
+
+    <section id="homeScreen">
+        <div class="main-buttons">
+            <button id="btnCifra">CIFRA</button>
+            <button id="btnDecifra">DECIFRA</button>
+            <button id="btnDesk">DESK</button>
+        </div>
+    </section>
+
+    <section id="bugReportScreen" class="hidden">
+        <h2>SEGNALA BUG</h2>
+
+        <input id="bugTitle" type="text" placeholder="Titolo del bug">
+
+        <textarea id="bugDescription" placeholder="Descrizione del bug"></textarea>
+
+        <textarea id="bugWhatHappened" placeholder="Cosa è successo?"></textarea>
+
+        <div id="bugReportResult" class="hidden">
+            <button id="copyBugReport">COPIA SEGNALAZIONE</button>
+            <p>Incolla il testo copiato quando scrivi al proprietario dell'app.</p>
+        </div>
+
+        <button id="backFromBugReport">INDIETRO</button>
+    </section>
+
+    <section id="cifraScreen" class="hidden">
+        <div class="screenHeader">
+            <h2>Cifra</h2>
+            <button class="fileButton" id="openFileManagerCifra">CARICA FILE</button>
+        </div>
+
+        <textarea id="inputMessage" placeholder="Scrivi o incolla il messaggio da cifrare..."></textarea>
+
+        <h3>Livelli di cifratura</h3>
+        <div id="levelsContainer">
+            <div class="level">
+                <h4>Livello 1</h4>
+
+                <select class="methodSelect">
+                    <option value="cesare">Cesare</option>
+                    <option value="base64">Base64</option>
+                </select>
+
+                <div class="keyContainer">
+                    <input type="number" class="keyInput" placeholder="Chiave Cesare">
+                </div>
+
+                <button class="deleteLevel">ELIMINA LIVELLO</button>
+            </div>
+        </div>
+
+        <div class="levelButtons">
+            <button id="addLevel">+</button>
+            <button id="removeLevel">−</button>
+        </div>
+
+        <div class="instructionsContainer">
+            <h3>Istruzioni</h3>
+
+            <p>
+                Le istruzioni vengono inserite nel risultato nella posizione scelta.
+            </p>
+
+            <textarea
+                id="instructionsInput"
+                placeholder="Scrivi qui le istruzioni..."
+            ></textarea>
+
+            <div class="instructionPositionBox">
+                <label for="instructionPosition">
+                    Posizione delle istruzioni:
+                    <strong id="instructionPositionValue">0</strong>
+                </label>
+
+                <input
+                    id="instructionPosition"
+                    type="range"
+                    min="0"
+                    max="0"
+                    value="0"
+                    step="1"
+                >
+
+                <div class="rangeLabels">
+                    <span>inizio</span>
+                    <span>fine</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="encryptButton">CIFRA</button>
+
+        <div id="resultContainer" class="hidden">
+            <h3>Messaggio cifrato</h3>
+
+            <div class="resultWithCopy">
+                <textarea id="encryptedMessage" readonly></textarea>
+
+                <button
+                    id="copyEncrypted"
+                    class="copyButton"
+                    title="Copia negli appunti"
+                    aria-label="Copia messaggio cifrato"
+                >📋</button>
+            </div>
+
+            <button id="ticketButton">TICKET</button>
+        </div>
+
+        <div class="exitButtons">
+            <button id="backHome">INDIETRO</button>
+            <button id="exitCifra">ESCI</button>
+        </div>
+    </section>
+
+    <section id="ticketScreen" class="hidden">
+        <h2>Ticket</h2>
+
+        <button id="takeTicket">PRENDI TICKET</button>
+        <button id="backFromTicket">INDIETRO</button>
+    </section>
+
+    <section id="deskScreen" class="hidden">
+        <div class="screenHeader">
+            <h2>Desk</h2>
+        </div>
+
+        <div id="deskHome">
+            <p>
+                Un Desk contiene un Kit di Set già configurati.
+            </p>
+
+            <div class="deskButtons">
+                <button id="createDeskButton">CREA DESK</button>
+                <button id="loadDeskButton">CARICA DESK</button>
+            </div>
+        </div>
+
+        <div id="deskCreator" class="hidden">
+            <h3>CREA DESK</h3>
+
+            <input
+                id="deskTitleInput"
+                type="text"
+                placeholder="Titolo del Desk"
+            >
+
+            <div id="deskSetsContainer"></div>
+
+            <div class="levelButtons">
+                <button id="addDeskSet">+ SET</button>
+            </div>
+
+            <h3>Codice Desk</h3>
+
+            <textarea
+                id="deskCodeOutput"
+                class="codeArea"
+                readonly
+            ></textarea>
+
+            <div class="exitButtons">
+                <button id="copyDeskCode">COPIA CODICE</button>
+                <button id="backFromDeskCreator">INDIETRO</button>
+            </div>
+        </div>
+
+        <div id="deskLoader" class="hidden">
+            <h3>CARICA DESK</h3>
+
+            <input
+                id="deskFileInput"
+                type="file"
+                accept=".txt,.desk,text/plain"
+            >
+
+            <p>
+                Oppure incolla qui il codice del Desk:
+            </p>
+
+            <textarea
+                id="deskCodeInput"
+                class="codeArea"
+                placeholder="Incolla qui il codice del Desk..."
+            ></textarea>
+
+            <button id="applyDeskButton">APPLICA DESK</button>
+            <button id="backFromDeskLoader">INDIETRO</button>
+        </div>
+
+        <div id="deskSets" class="hidden">
+            <h3 id="loadedDeskTitle">Desk</h3>
+
+            <p id="loadedDeskDescription"></p>
+
+            <div id="deskSetList"></div>
+
+            <button id="backFromDeskSets">INDIETRO</button>
+        </div>
+
+        <div id="deskSetChoice" class="hidden">
+            <h3 id="selectedSetTitle">Set</h3>
+
+            <p id="selectedSetDescription"></p>
+
+            <p>
+                Vuoi usare questo Set per:
+            </p>
+
+            <button id="useSetCifra">CIFRA</button>
+            <button id="useSetDecifra">DECIFRA</button>
+
+            <br>
+
+            <button id="backFromSetChoice">INDIETRO</button>
+        </div>
+    </section>
+
+    <section id="decifraScreen" class="hidden">
+        <div class="screenHeader">
+            <h2>Decifra</h2>
+
+            <button
+                class="fileButton"
+                id="openFileManagerDecifra"
+            >CARICA FILE</button>
+        </div>
+
+        <textarea
+            id="decryptInputMessage"
+            placeholder="Scrivi o incolla il messaggio da decifrare..."
+        ></textarea>
+
+        <h3>Livelli di cifratura</h3>
+
+        <div id="decryptLevelsContainer">
+            <div class="level">
+                <h4>Livello 1</h4>
+
+                <select class="methodSelect">
+                    <option value="cesare">Cesare</option>
+                    <option value="base64">Base64</option>
+                </select>
+
+                <div class="keyContainer">
+                    <input
+                        type="number"
+                        class="keyInput"
+                        placeholder="Chiave Cesare"
+                    >
+                </div>
+
+                <button class="deleteLevel">ELIMINA LIVELLO</button>
+            </div>
+        </div>
+
+        <div class="levelButtons">
+            <button id="decryptAddLevel">+</button>
+            <button id="decryptRemoveLevel">−</button>
+        </div>
+
+        <p>
+            Se il messaggio contiene le istruzioni inserite durante la cifratura,
+            cancellale manualmente dal testo prima di premere DECIFRA.
+        </p>
+
+        <button id="decryptButton">DECIFRA</button>
+
+        <div id="decryptResultContainer" class="hidden">
+            <h3>Messaggio decifrato</h3>
+
+            <div class="resultWithCopy">
+                <textarea
+                    id="decryptedMessage"
+                    readonly
+                ></textarea>
+
+                <button
+                    id="copyDecrypted"
+                    class="copyButton"
+                    title="Copia negli appunti"
+                    aria-label="Copia messaggio decifrato"
+                >📋</button>
+            </div>
+        </div>
+
+        <div class="exitButtons">
+            <button id="backHomeDecrypt">INDIETRO</button>
+            <button id="exitDecrypt">ESCI</button>
+        </div>
+    </section>
+</main>
+
+<div id="fileManagerOverlay" class="overlay hidden">
+    <div class="fileManager">
+        <button id="closeFileManager" class="closeButton">×</button>
+
+        <h2>Gestisci file</h2>
+
+        <p>
+            Trascina qui i file oppure selezionali dal dispositivo.
+        </p>
+
+        <div id="dropZone" class="dropZone">
+            <span>TRASCINA QUI I FILE</span>
+
+            <button id="chooseFiles">ESPLORA FILE</button>
+
+            <input
+                id="fileInput"
+                type="file"
+                accept=".txt,.pdf,text/plain,application/pdf"
+                multiple
+                hidden
+            >
+        </div>
+
+        <div id="selectedFiles" class="selectedFiles">
+            <p>Nessun file selezionato.</p>
+        </div>
+
+        <button
+            id="filesLoadedButton"
+            class="confirmFilesButton"
+        >FILE CARICATI</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
