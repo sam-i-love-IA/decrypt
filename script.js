@@ -633,7 +633,7 @@ function insertInstructions(text, instructions, position) {
     chars.splice(
         safePosition,
         0,
-        instructions + "\n\n"
+        instructions
     );
 
     return chars.join("");
