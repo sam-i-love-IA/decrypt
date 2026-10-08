@@ -206,6 +206,26 @@ function createLevel() {
     return level;
 }
 
+addLevel.addEventListener("click", function () {
+    const levels = levelsContainer.querySelectorAll(".level");
+    const newLevel = createLevel();
+    const transition = createTransition();
+    if (levels.length > 0) levelsContainer.insertBefore(transition, levels[levels.length - 1].nextSibling);
+    levelsContainer.appendChild(newLevel);
+    renumberLevels();
+    updateInstructionRange();
+});
+
+removeLevel.addEventListener("click", function () {
+    const levels = levelsContainer.querySelectorAll(".level");
+    if (levels.length <= 1) return;
+    const transitions = levelsContainer.querySelectorAll(".transition");
+    if (transitions.length) transitions[transitions.length - 1].remove();
+    levels[levels.length - 1].remove();
+    renumberLevels();
+    updateInstructionRange();
+});
+
 function getTransitionAfterLevel(levelIndex) {
     const transitions = levelsContainer.querySelectorAll(".transition");
 
@@ -1085,6 +1105,24 @@ function createDecryptLevel() {
 
     return level;
 }
+
+decryptAddLevel.addEventListener("click", function () {
+    const levels = decryptLevelsContainer.querySelectorAll(".level");
+    const newLevel = createDecryptLevel();
+    const transition = createDecryptTransition();
+    if (levels.length > 0) decryptLevelsContainer.insertBefore(transition, levels[levels.length - 1].nextSibling);
+    decryptLevelsContainer.appendChild(newLevel);
+    renumberDecryptLevels();
+});
+
+decryptRemoveLevel.addEventListener("click", function () {
+    const levels = decryptLevelsContainer.querySelectorAll(".level");
+    if (levels.length <= 1) return;
+    const transitions = decryptLevelsContainer.querySelectorAll(".transition");
+    if (transitions.length) transitions[transitions.length - 1].remove();
+    levels[levels.length - 1].remove();
+    renumberDecryptLevels();
+});
 
 function createDecryptTransition() {
     const transition =
