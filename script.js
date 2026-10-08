@@ -1,13 +1,11 @@
+const btnCifra = document.getElementById("btnCifra");
+const btnDecifra = document.getElementById("btnDecifra");
+
 const homeScreen = document.getElementById("homeScreen");
 const cifraScreen = document.getElementById("cifraScreen");
 const ticketScreen = document.getElementById("ticketScreen");
 const decifraScreen = document.getElementById("decifraScreen");
-const deskScreen = document.getElementById("deskScreen");
 const bugReportScreen = document.getElementById("bugReportScreen");
-
-const btnCifra = document.getElementById("btnCifra");
-const btnDecifra = document.getElementById("btnDecifra");
-const btnDesk = document.getElementById("btnDesk");
 
 const bugReportButton = document.getElementById("bugReportButton");
 const bugTitle = document.getElementById("bugTitle");
@@ -17,44 +15,36 @@ const bugReportResult = document.getElementById("bugReportResult");
 const copyBugReport = document.getElementById("copyBugReport");
 const backFromBugReport = document.getElementById("backFromBugReport");
 
-const inputMessage = document.getElementById("inputMessage");
-const encryptedMessage = document.getElementById("encryptedMessage");
-
-const levelsContainer = document.getElementById("levelsContainer");
 const addLevel = document.getElementById("addLevel");
 const removeLevel = document.getElementById("removeLevel");
-
-const instructionsInput = document.getElementById("instructionsInput");
-const instructionPosition = document.getElementById("instructionPosition");
-const instructionPositionValue = document.getElementById("instructionPositionValue");
-
-const encryptButton = document.getElementById("encryptButton");
-const resultContainer = document.getElementById("resultContainer");
-const ticketButton = document.getElementById("ticketButton");
-const takeTicket = document.getElementById("takeTicket");
-const backFromTicket = document.getElementById("backFromTicket");
-
-const copyEncrypted = document.getElementById("copyEncrypted");
+const levelsContainer = document.getElementById("levelsContainer");
 
 const backHome = document.getElementById("backHome");
 const exitCifra = document.getElementById("exitCifra");
+const backHomeDecrypt = document.getElementById("backHomeDecrypt");
+const backFromTicket = document.getElementById("backFromTicket");
+const exitDecrypt = document.getElementById("exitDecrypt");
+
+const encryptButton = document.getElementById("encryptButton");
+const inputMessage = document.getElementById("inputMessage");
+const encryptedMessage = document.getElementById("encryptedMessage");
+const instructionsInput = document.getElementById("instructionsInput");
+const instructionPosition = document.getElementById("instructionPosition");
+const instructionPositionValue = document.getElementById("instructionPositionValue");
+const resultContainer = document.getElementById("resultContainer");
+const ticketButton = document.getElementById("ticketButton");
+const takeTicket = document.getElementById("takeTicket");
 
 const decryptInputMessage = document.getElementById("decryptInputMessage");
 const decryptLevelsContainer = document.getElementById("decryptLevelsContainer");
 const decryptAddLevel = document.getElementById("decryptAddLevel");
 const decryptRemoveLevel = document.getElementById("decryptRemoveLevel");
 const decryptButton = document.getElementById("decryptButton");
-
 const decryptResultContainer = document.getElementById("decryptResultContainer");
 const decryptedMessage = document.getElementById("decryptedMessage");
-const copyDecrypted = document.getElementById("copyDecrypted");
-
-const backHomeDecrypt = document.getElementById("backHomeDecrypt");
-const exitDecrypt = document.getElementById("exitDecrypt");
 
 const openFileManagerCifra = document.getElementById("openFileManagerCifra");
 const openFileManagerDecifra = document.getElementById("openFileManagerDecifra");
-
 const fileManagerOverlay = document.getElementById("fileManagerOverlay");
 const closeFileManager = document.getElementById("closeFileManager");
 const dropZone = document.getElementById("dropZone");
@@ -63,45 +53,10 @@ const fileInput = document.getElementById("fileInput");
 const selectedFiles = document.getElementById("selectedFiles");
 const filesLoadedButton = document.getElementById("filesLoadedButton");
 
-const deskHome = document.getElementById("deskHome");
-const deskCreator = document.getElementById("deskCreator");
-const deskLoader = document.getElementById("deskLoader");
-const deskSets = document.getElementById("deskSets");
-const deskSetChoice = document.getElementById("deskSetChoice");
-
-const createDeskButton = document.getElementById("createDeskButton");
-const loadDeskButton = document.getElementById("loadDeskButton");
-
-const deskTitleInput = document.getElementById("deskTitleInput");
-const deskSetsContainer = document.getElementById("deskSetsContainer");
-const addDeskSet = document.getElementById("addDeskSet");
-const deskCodeOutput = document.getElementById("deskCodeOutput");
-const copyDeskCode = document.getElementById("copyDeskCode");
-const backFromDeskCreator = document.getElementById("backFromDeskCreator");
-
-const deskFileInput = document.getElementById("deskFileInput");
-const deskCodeInput = document.getElementById("deskCodeInput");
-const applyDeskButton = document.getElementById("applyDeskButton");
-const backFromDeskLoader = document.getElementById("backFromDeskLoader");
-
-const loadedDeskTitle = document.getElementById("loadedDeskTitle");
-const loadedDeskDescription = document.getElementById("loadedDeskDescription");
-const deskSetList = document.getElementById("deskSetList");
-const backFromDeskSets = document.getElementById("backFromDeskSets");
-
-const selectedSetTitle = document.getElementById("selectedSetTitle");
-const selectedSetDescription = document.getElementById("selectedSetDescription");
-const useSetCifra = document.getElementById("useSetCifra");
-const useSetDecifra = document.getElementById("useSetDecifra");
-const backFromSetChoice = document.getElementById("backFromSetChoice");
-
 let lastTicket = "";
-
-let currentDesk = null;
-let currentDeskSet = null;
-let currentDeskMode = "";
-
-let deskSetsData = [];
+let fileManagerTarget = "cifra";
+let pendingFiles = [];
+let skipFileConfirmation = false;
 
 
 // ========================================
@@ -116,40 +71,21 @@ function showScreen(screen) {
     deskScreen.classList.add("hidden");
     bugReportScreen.classList.add("hidden");
 
-    if (screen === "home") {
-        homeScreen.classList.remove("hidden");
-    }
-
-    if (screen === "cifra") {
-        cifraScreen.classList.remove("hidden");
-    }
-
-    if (screen === "ticket") {
-        ticketScreen.classList.remove("hidden");
-    }
-
-    if (screen === "decifra") {
-        decifraScreen.classList.remove("hidden");
-    }
-
-    if (screen === "desk") {
-        deskScreen.classList.remove("hidden");
-    }
-
-    if (screen === "bug") {
-        bugReportScreen.classList.remove("hidden");
-        updateBugReportButton();
-    }
+    if (screen === "home") homeScreen.classList.remove("hidden");
+    if (screen === "cifra") cifraScreen.classList.remove("hidden");
+    if (screen === "ticket") ticketScreen.classList.remove("hidden");
+    if (screen === "decifra") decifraScreen.classList.remove("hidden");
+    if (screen === "desk") deskScreen.classList.remove("hidden");
+    if (screen === "bug") bugReportScreen.classList.remove("hidden");
 }
 
-function navigate(screen) {
+function navigate(screen, addHistory = true) {
     showScreen(screen);
+
+    if (addHistory) {
+        history.pushState({ screen }, "", "#" + screen);
+    }
 }
-
-
-// ========================================
-// NAVIGAZIONE PRINCIPALE
-// ========================================
 
 btnCifra.addEventListener("click", function () {
     navigate("cifra");
@@ -159,12 +95,12 @@ btnDecifra.addEventListener("click", function () {
     navigate("decifra");
 });
 
-btnDesk.addEventListener("click", function () {
-    navigate("desk");
-});
-
 bugReportButton.addEventListener("click", function () {
     navigate("bug");
+});
+
+backFromBugReport.addEventListener("click", function () {
+    navigate("home");
 });
 
 backHome.addEventListener("click", function () {
@@ -175,156 +111,146 @@ backHomeDecrypt.addEventListener("click", function () {
     navigate("home");
 });
 
-backFromBugReport.addEventListener("click", function () {
-    navigate("home");
+backFromTicket.addEventListener("click", function () {
+    navigate("cifra");
 });
 
+window.addEventListener("popstate", function (event) {
+    showScreen(
+        event.state && event.state.screen
+            ? event.state.screen
+            : "home"
+    );
+});
+
+history.replaceState({ screen: "home" }, "", "#home");
+
 
 // ========================================
-// CESARE
+// LIVELLI CIFRA
 // ========================================
 
-function cesareEncrypt(text, key) {
-    const shift = ((key % 26) + 26) % 26;
+function updateKeyVisibility(level) {
+    const method = level.querySelector(".methodSelect").value;
+    const keyContainer = level.querySelector(".keyContainer");
 
-    return Array.from(text).map(function (char) {
-        if (char >= "A" && char <= "Z") {
-            return String.fromCharCode(
-                ((char.charCodeAt(0) - 65 + shift) % 26) + 65
-            );
-        }
-
-        if (char >= "a" && char <= "z") {
-            return String.fromCharCode(
-                ((char.charCodeAt(0) - 97 + shift) % 26) + 97
-            );
-        }
-
-        return char;
-    }).join("");
+    if (method === "cesare") {
+        keyContainer.classList.remove("hidden");
+    } else {
+        keyContainer.classList.add("hidden");
+    }
 }
 
-function cesareDecrypt(text, key) {
-    return cesareEncrypt(text, -key);
-}
-
-
-// ========================================
-// BASE64 UTF-8
-// ========================================
-
-function base64Encode(text) {
-    const bytes = new TextEncoder().encode(text);
-
-    let binary = "";
-
-    bytes.forEach(function (byte) {
-        binary += String.fromCharCode(byte);
+function setupLevel(level) {
+    level.querySelector(".methodSelect").addEventListener("change", function () {
+        updateKeyVisibility(level);
     });
 
-    return btoa(binary);
-}
+    level.querySelector(".deleteLevel").addEventListener("click", function () {
+        const levels = levelsContainer.querySelectorAll(".level");
 
-function base64Decode(text) {
-    try {
-        const binary = atob(text);
-        const bytes = new Uint8Array(binary.length);
-
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
+        if (levels.length <= 1) {
+            alert("Deve rimanere almeno un livello.");
+            return;
         }
 
-        return new TextDecoder().decode(bytes);
-    } catch (error) {
-        return null;
-    }
+        level.remove();
+        renumberLevels();
+        rebuildTransitions();
+        updateInstructionRange();
+    });
+
+    updateKeyVisibility(level);
 }
 
+function renumberLevels() {
+    const levels = levelsContainer.querySelectorAll(".level");
 
-// ========================================
-// NOISE CIFRA
-// ========================================
+    levels.forEach(function (level, index) {
+        const title = level.querySelector("h4");
 
-function applyCharacterNoise(text, character, interval) {
-    let result = "";
-    let count = 0;
-
-    for (const char of text) {
-        result += char;
-        count++;
-
-        if (count % interval === 0) {
-            result += character;
+        if (title) {
+            title.textContent = "Livello " + (index + 1);
         }
-    }
-
-    return result;
+    });
 }
 
-function applyWordNoise(text, word, interval) {
-    let result = "";
-    let letterCount = 0;
-    let wordIndex = 0;
+function createLevel() {
+    const level = document.createElement("div");
 
-    for (const char of text) {
-        result += char;
+    level.className = "level";
 
-        if (
-            (char >= "A" && char <= "Z") ||
-            (char >= "a" && char <= "z")
-        ) {
-            letterCount++;
+    level.innerHTML = `
+        <h4>Livello</h4>
 
-            if (letterCount % interval === 0) {
-                result += word[wordIndex % word.length];
-                wordIndex++;
-            }
-        }
-    }
+        <select class="methodSelect">
+            <option value="cesare">Cesare</option>
+            <option value="base64">Base64</option>
+        </select>
 
-    return result;
+        <div class="keyContainer">
+            <input
+                type="number"
+                class="keyInput"
+                placeholder="Chiave Cesare"
+            >
+        </div>
+
+        <button class="deleteLevel">
+            ELIMINA LIVELLO
+        </button>
+    `;
+
+    setupLevel(level);
+
+    return level;
 }
 
+function getTransitionAfterLevel(levelIndex) {
+    const transitions = levelsContainer.querySelectorAll(".transition");
 
-// ========================================
-// LETTURA NOISE CIFRA
-// ========================================
-
-function readNoise(noise) {
-    const method = noise.querySelector(".noiseMethod").value;
-    const interval = parseInt(
-        noise.querySelector(".noiseInterval").value,
-        10
-    );
-
-    if (method === "character") {
-        return {
-            method: "character",
-            interval: interval,
-            character: noise.querySelector(".noiseCharacter").value
-        };
-    }
-
-    return {
-        method: "word",
-        interval: interval,
-        word: noise.querySelector(".noiseWord").value
-    };
+    return transitions[levelIndex] || null;
 }
 
+function createTransition() {
+    const transition = document.createElement("div");
 
-// ========================================
-// CREAZIONE NOISE
-// ========================================
+    transition.className = "transition";
 
-function createNoiseElement() {
+    transition.innerHTML = `
+        <div class="transitionHeader">
+            <strong>Noise</strong>
+        </div>
+
+        <div class="noiseList"></div>
+
+        <button class="addNoiseButton">
+            + NOISE
+        </button>
+    `;
+
+    const addNoiseButton =
+        transition.querySelector(".addNoiseButton");
+
+    addNoiseButton.addEventListener("click", function () {
+        addNoise(transition);
+    });
+
+    return transition;
+}
+
+function addNoise(transition) {
+    const noiseList =
+        transition.querySelector(".noiseList");
+
     const noise = document.createElement("div");
+
     noise.className = "noise";
 
     noise.innerHTML = `
         <select class="noiseMethod">
-            <option value="character">Noise lettera</option>
-            <option value="word">Noise parola</option>
+            <option value="character">Lettera</option>
+            <option value="word">Parola</option>
         </select>
 
         <input
@@ -348,14 +274,19 @@ function createNoiseElement() {
             placeholder="Parola"
         >
 
-        <button class="removeNoise">
+        <button class="deleteNoise">
             ELIMINA NOISE
         </button>
     `;
 
-    const method = noise.querySelector(".noiseMethod");
-    const character = noise.querySelector(".noiseCharacter");
-    const word = noise.querySelector(".noiseWord");
+    const method =
+        noise.querySelector(".noiseMethod");
+
+    const character =
+        noise.querySelector(".noiseCharacter");
+
+    const word =
+        noise.querySelector(".noiseWord");
 
     method.addEventListener("change", function () {
         if (method.value === "character") {
@@ -367,404 +298,472 @@ function createNoiseElement() {
         }
     });
 
-    noise.querySelector(".removeNoise").addEventListener("click", function () {
-        noise.remove();
-    });
+    noise.querySelector(".deleteNoise")
+        .addEventListener("click", function () {
+            noise.remove();
+        });
 
-    return noise;
+    noiseList.appendChild(noise);
 }
 
-
-// ========================================
-// TRANSIZIONI CIFRA
-// ========================================
-
-function createTransitionElement() {
-    const transition = document.createElement("div");
-    transition.className = "transition";
-
-    transition.innerHTML = `
-        <div class="transitionTitle">
-            NOISE
-        </div>
-
-        <div class="noiseContainer"></div>
-
-        <button class="addNoise">
-            + NOISE
-        </button>
-    `;
-
-    const noiseContainer =
-        transition.querySelector(".noiseContainer");
-
-    transition.querySelector(".addNoise").addEventListener(
-        "click",
-        function () {
-            noiseContainer.appendChild(
-                createNoiseElement()
-            );
-        }
+function rebuildTransitions() {
+    const levels = Array.from(
+        levelsContainer.querySelectorAll(".level")
     );
 
-    return transition;
-}
+    const oldTransitions = Array.from(
+        levelsContainer.querySelectorAll(".transition")
+    );
 
-
-// ========================================
-// LIVELLI CIFRA
-// ========================================
-
-function setupLevel(level) {
-    const methodSelect =
-        level.querySelector(".methodSelect");
-
-    const keyContainer =
-        level.querySelector(".keyContainer");
-
-    methodSelect.addEventListener("change", function () {
-        if (methodSelect.value === "cesare") {
-            keyContainer.classList.remove("hidden");
-        } else {
-            keyContainer.classList.add("hidden");
-        }
+    const transitionData = oldTransitions.map(function (transition) {
+        return transition;
     });
 
-    level.querySelector(".deleteLevel").addEventListener(
-        "click",
-        function () {
-            const levels =
-                levelsContainer.querySelectorAll(".level");
-
-            if (levels.length <= 1) {
-                return;
-            }
-
-            const transitions =
-                levelsContainer.querySelectorAll(".transition");
-
-            const levelIndex =
-                Array.from(
-                    levelsContainer.children
-                ).indexOf(level);
-
-            if (
-                levelIndex > 0 &&
-                transitions[levelIndex - 1]
-            ) {
-                transitions[levelIndex - 1].remove();
-            }
-
-            level.remove();
-
-            renumberLevels();
-        }
-    );
-}
-
-function renumberLevels() {
-    const levels =
-        levelsContainer.querySelectorAll(".level");
+    levelsContainer.innerHTML = "";
 
     levels.forEach(function (level, index) {
-        level.querySelector("h4").textContent =
-            "Livello " + (index + 1);
+        levelsContainer.appendChild(level);
+
+        if (index < levels.length - 1) {
+            const transition =
+                transitionData[index] || createTransition();
+
+            levelsContainer.appendChild(transition);
+        }
     });
-}
-
-function addCifraLevel() {
-    const levels =
-        levelsContainer.querySelectorAll(".level");
-
-    const lastLevel =
-        levels[levels.length - 1];
-
-    const newLevel =
-        document.createElement("div");
-
-    newLevel.className = "level";
-
-    newLevel.innerHTML = `
-        <h4>Livello ${levels.length + 1}</h4>
-
-        <select class="methodSelect">
-            <option value="cesare">Cesare</option>
-            <option value="base64">Base64</option>
-        </select>
-
-        <div class="keyContainer">
-            <input
-                type="number"
-                class="keyInput"
-                placeholder="Chiave Cesare"
-            >
-        </div>
-
-        <button class="deleteLevel">
-            ELIMINA LIVELLO
-        </button>
-    `;
-
-    const transition =
-        createTransitionElement();
-
-    levelsContainer.insertBefore(
-        transition,
-        lastLevel.nextSibling
-    );
-
-    levelsContainer.appendChild(newLevel);
-
-    setupLevel(newLevel);
-}
-
-addLevel.addEventListener("click", addCifraLevel);
-
-removeLevel.addEventListener("click", function () {
-    const levels =
-        levelsContainer.querySelectorAll(".level");
-
-    if (levels.length <= 1) {
-        return;
-    }
-
-    const transitions =
-        levelsContainer.querySelectorAll(".transition");
-
-    if (transitions.length) {
-        transitions[transitions.length - 1].remove();
-    }
-
-    levels[levels.length - 1].remove();
 
     renumberLevels();
-});
+}
 
-setupLevel(
-    levelsContainer.querySelector(".level")
-);
+function getLevels() {
+    return Array.from(
+        levelsContainer.querySelectorAll(".level")
+    );
+}
 
+function getTransitions() {
+    return Array.from(
+        levelsContainer.querySelectorAll(".transition")
+    );
+}
 
-// ========================================
-// POSIZIONE ISTRUZIONI
-// ========================================
+function readNoise(noise) {
+    const method =
+        noise.querySelector(".noiseMethod").value;
 
-instructionsInput.addEventListener("input", function () {
-    instructionPosition.max =
-        inputMessage.value.length || 0;
+    const interval =
+        parseInt(
+            noise.querySelector(".noiseInterval").value,
+            10
+        );
 
-    if (
-        parseInt(instructionPosition.value, 10) >
-        parseInt(instructionPosition.max, 10)
-    ) {
-        instructionPosition.value =
-            instructionPosition.max;
-    }
+    const characterInput =
+        noise.querySelector(".noiseCharacter");
 
-    instructionPositionValue.textContent =
-        instructionPosition.value;
-});
+    const wordInput =
+        noise.querySelector(".noiseWord");
 
-inputMessage.addEventListener("input", function () {
-    const length =
-        inputMessage.value.length;
-
-    instructionPosition.max = length;
-
-    if (
-        parseInt(instructionPosition.value, 10) >
-        length
-    ) {
-        instructionPosition.value = length;
-    }
-
-    instructionPositionValue.textContent =
-        instructionPosition.value;
-});
-
-instructionPosition.addEventListener("input", function () {
-    instructionPositionValue.textContent =
-        instructionPosition.value;
-});
+    return {
+        method,
+        interval,
+        character: characterInput.value,
+        word: wordInput.value
+    };
+}
 
 
 // ========================================
-// INSERIMENTO ISTRUZIONI
+// CIFRARIO DI CESARE
 // ========================================
 
-function insertInstructions(text, instructions, position) {
-    if (instructions === "") {
+function cesare(text, key) {
+    const normalizedKey =
+        ((parseInt(key, 10) % 26) + 26) % 26;
+
+    return Array.from(text).map(function (char) {
+        const code = char.charCodeAt(0);
+
+        if (code >= 65 && code <= 90) {
+            return String.fromCharCode(
+                ((code - 65 + normalizedKey) % 26) + 65
+            );
+        }
+
+        if (code >= 97 && code <= 122) {
+            return String.fromCharCode(
+                ((code - 97 + normalizedKey) % 26) + 97
+            );
+        }
+
+        return char;
+    }).join("");
+}
+
+function cesareInverse(text, key) {
+    return cesare(text, -parseInt(key, 10));
+}
+
+
+// ========================================
+// BASE64
+// ========================================
+
+function utf8ToBase64(text) {
+    const bytes =
+        new TextEncoder().encode(text);
+
+    let binary = "";
+
+    bytes.forEach(function (byte) {
+        binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary);
+}
+
+function base64ToUtf8(base64) {
+    const binary = atob(base64);
+
+    const bytes =
+        Uint8Array.from(
+            binary,
+            function (char) {
+                return char.charCodeAt(0);
+            }
+        );
+
+    return new TextDecoder().decode(bytes);
+}
+
+
+// ========================================
+// NOISE
+// ========================================
+
+function insertCharacterNoise(text, interval, character) {
+    if (!character) {
         return text;
     }
 
-    return (
-        text.slice(0, position) +
-        instructions +
-        "\n\n" +
-        text.slice(position)
+    let result = "";
+    let count = 0;
+
+    for (const char of text) {
+        result += char;
+        count++;
+
+        if (count === interval) {
+            result += character;
+            count = 0;
+        }
+    }
+
+    return result;
+}
+
+function insertWordNoise(text, interval, word) {
+    if (!word) {
+        return text;
+    }
+
+    const letters =
+        Array.from(word);
+
+    if (letters.length === 0) {
+        return text;
+    }
+
+    let result = "";
+    let count = 0;
+    let wordIndex = 0;
+
+    for (const char of text) {
+        result += char;
+
+        if (/[A-Za-z]/.test(char)) {
+            count++;
+
+            if (count === interval) {
+                result += letters[wordIndex];
+
+                wordIndex =
+                    (wordIndex + 1) % letters.length;
+
+                count = 0;
+            }
+        }
+    }
+
+    return result;
+}
+
+function applyNoise(text, noise) {
+    if (noise.method === "character") {
+        return insertCharacterNoise(
+            text,
+            noise.interval,
+            noise.character
+        );
+    }
+
+    return insertWordNoise(
+        text,
+        noise.interval,
+        noise.word
     );
+}
+
+function removeCharacterNoise(text, interval) {
+    if (!Number.isInteger(interval) || interval <= 0) {
+        return text;
+    }
+
+    let result = "";
+    let count = 0;
+
+    for (const char of text) {
+        if (count === interval) {
+            count = 0;
+            continue;
+        }
+
+        result += char;
+        count++;
+    }
+
+    return result;
+}
+
+function removeWordNoise(text, interval) {
+    if (!Number.isInteger(interval) || interval <= 0) {
+        return text;
+    }
+
+    let result = "";
+    let count = 0;
+
+    for (const char of text) {
+        if (/[A-Za-z]/.test(char)) {
+            count++;
+
+            if (count === interval) {
+                count = 0;
+            }
+        }
+
+        result += char;
+    }
+
+    return result;
 }
 
 
 // ========================================
-// CIFRATURA
+// ISTRUZIONI
 // ========================================
 
-encryptButton.addEventListener("click", function () {
-    const message = inputMessage.value;
+function updateInstructionRange() {
+    const messageLength =
+        Array.from(inputMessage.value).length;
 
-    if (message === "") {
-        alert("Inserisci un messaggio da cifrare.");
-        return;
+    instructionPosition.max =
+        messageLength;
+
+    let value =
+        parseInt(instructionPosition.value, 10);
+
+    if (value > messageLength) {
+        value = messageLength;
     }
 
-    let result = message;
+    instructionPosition.value = value;
+    instructionPositionValue.textContent = value;
+}
 
-    const levels =
-        Array.from(
-            levelsContainer.querySelectorAll(".level")
+inputMessage.addEventListener(
+    "input",
+    updateInstructionRange
+);
+
+instructionPosition.addEventListener(
+    "input",
+    function () {
+        instructionPositionValue.textContent =
+            instructionPosition.value;
+    }
+);
+
+function insertInstructions(text, instructions, position) {
+    if (!instructions) {
+        return text;
+    }
+
+    const chars =
+        Array.from(text);
+
+    const safePosition =
+        Math.max(
+            0,
+            Math.min(
+                parseInt(position, 10) || 0,
+                chars.length
+            )
         );
 
-    const transitions =
-        Array.from(
-            levelsContainer.querySelectorAll(".transition")
-        );
+    chars.splice(
+        safePosition,
+        0,
+        instructions + "\n\n"
+    );
 
-    const ticketLevels = [];
+    return chars.join("");
+}
 
-    for (let i = 0; i < levels.length; i++) {
-        const level = levels[i];
 
-        const method =
-            level.querySelector(".methodSelect").value;
+// ========================================
+// CIFRA
+// ========================================
 
-        if (method === "cesare") {
-            const key =
-                parseInt(
-                    level.querySelector(".keyInput").value,
-                    10
-                );
+encryptButton.addEventListener(
+    "click",
+    function () {
+        const message =
+            inputMessage.value;
 
-            if (Number.isNaN(key)) {
-                alert(
-                    "Inserisci una chiave valida per il livello " +
-                    (i + 1) +
-                    "."
-                );
+        const levels =
+            getLevels();
 
-                return;
+        const transitions =
+            getTransitions();
+
+        let result =
+            message;
+
+        const ticketLevels = [];
+        const ticketTransitions = [];
+
+        for (let i = 0; i < levels.length; i++) {
+            const level =
+                levels[i];
+
+            const method =
+                level.querySelector(
+                    ".methodSelect"
+                ).value;
+
+            let key = "";
+
+            if (method === "cesare") {
+                key =
+                    level.querySelector(
+                        ".keyInput"
+                    ).value;
+
+                if (key === "") {
+                    alert(
+                        "Inserisci una chiave Cesare."
+                    );
+                    return;
+                }
+
+                result =
+                    cesare(result, key);
+            } else {
+                result =
+                    utf8ToBase64(result);
             }
 
-            result =
-                cesareEncrypt(result, key);
-
             ticketLevels.push({
-                method: "cesare",
-                key: key
+                method,
+                key
             });
-        } else {
-            result =
-                base64Encode(result);
 
-            ticketLevels.push({
-                method: "base64"
-            });
-        }
+            if (i < levels.length - 1) {
+                const transition =
+                    transitions[i];
 
-        if (i < levels.length - 1) {
-            const transition =
-                transitions[i];
+                const transitionNoises = [];
 
-            if (transition) {
-                const noises =
-                    Array.from(
-                        transition.querySelectorAll(".noise")
-                    );
-
-                for (const noise of noises) {
-                    const data =
-                        readNoise(noise);
-
-                    if (
-                        !Number.isInteger(data.interval) ||
-                        data.interval <= 0
-                    ) {
-                        alert(
-                            "Ogni Noise deve avere un intervallo maggiore di 0."
+                if (transition) {
+                    const noises =
+                        transition.querySelectorAll(
+                            ".noise"
                         );
 
-                        return;
-                    }
+                    for (const noise of noises) {
+                        const data =
+                            readNoise(noise);
 
-                    if (data.method === "character") {
-                        if (data.character.length !== 1) {
+                        if (
+                            !Number.isInteger(
+                                data.interval
+                            ) ||
+                            data.interval <= 0
+                        ) {
                             alert(
-                                "Il Noise lettera deve contenere esattamente un carattere."
+                                "Ogni Noise deve avere un intervallo maggiore di 0."
                             );
+                            return;
+                        }
 
+                        if (
+                            data.method === "character" &&
+                            !data.character
+                        ) {
+                            alert(
+                                "Inserisci il carattere del Noise."
+                            );
+                            return;
+                        }
+
+                        if (
+                            data.method === "word" &&
+                            !data.word
+                        ) {
+                            alert(
+                                "Inserisci la parola del Noise."
+                            );
                             return;
                         }
 
                         result =
-                            applyCharacterNoise(
+                            applyNoise(
                                 result,
-                                data.character,
-                                data.interval
-                            );
-                    } else {
-                        if (data.word === "") {
-                            alert(
-                                "Inserisci una parola per il Noise parola."
+                                data
                             );
 
-                            return;
-                        }
-
-                        result =
-                            applyWordNoise(
-                                result,
-                                data.word,
-                                data.interval
-                            );
+                        transitionNoises.push(
+                            data
+                        );
                     }
                 }
+
+                ticketTransitions.push(
+                    transitionNoises
+                );
             }
         }
-    }
 
-    const instructions =
-        instructionsInput.value;
+        const instructions =
+            instructionsInput.value;
 
-    const position =
-        Math.min(
+        const position =
             parseInt(
                 instructionPosition.value,
                 10
-            ) || 0,
-            result.length
-        );
+            ) || 0;
 
-    instructionPosition.max =
-        result.length;
+        const finalResult =
+            insertInstructions(
+                result,
+                instructions,
+                position
+            );
 
-    instructionPosition.value =
-        position;
+        encryptedMessage.value =
+            finalResult;
 
-    instructionPositionValue.textContent =
-        position;
-
-    const finalResult =
-        insertInstructions(
-            result,
-            instructions,
-            position
-        );
-
-    encryptedMessage.value =
-        finalResult;
-
-    lastTicket =
-        createTicket(
+        lastTicket = createTicket(
             message,
             instructions,
             position,
@@ -773,18 +772,17 @@ encryptButton.addEventListener("click", function () {
             finalResult
         );
 
-    saveLastEncryptionTicket(
-        lastTicket
-    );
+        saveLastEncryptionTicket(lastTicket);
 
-    resultContainer.classList.remove(
-        "hidden"
-    );
-});
+        resultContainer.classList.remove(
+            "hidden"
+        );
+    }
+);
 
 
 // ========================================
-// TICKET CIFRATURA
+// TICKET
 // ========================================
 
 function createTicket(
@@ -797,126 +795,134 @@ function createTicket(
 ) {
     let ticket = "";
 
-    ticket += "==============================\n";
-    ticket += "DECRYPT - TICKET DI CIFRATURA\n";
-    ticket += "==============================\n\n";
+    ticket +=
+        "==============================\n";
 
-    ticket += "MESSAGGIO INIZIALE:\n";
-    ticket += originalMessage + "\n\n";
+    ticket +=
+        "DECRYPT - TICKET DI CIFRATURA\n";
 
-    ticket += "ISTRUZIONI:\n";
+    ticket +=
+        "==============================\n\n";
 
-    if (instructions === "") {
-        ticket += "Nessuna istruzione.\n";
-    } else {
-        ticket += instructions + "\n";
-    }
+    ticket +=
+        "MESSAGGIO ORIGINALE:\n";
+
+    ticket +=
+        (
+            originalMessage === ""
+                ? "Nessun messaggio.\n"
+                : originalMessage + "\n"
+        );
+
+    ticket += "\n";
+
+    ticket +=
+        "ISTRUZIONI:\n";
+
+    ticket +=
+        (
+            instructions === ""
+                ? "Nessuna istruzione.\n"
+                : instructions + "\n"
+        );
 
     ticket +=
         "Posizione: " +
         position +
         "\n\n";
 
-    ticket += "PROCEDURA DI CIFRATURA:\n\n";
+    ticket +=
+        "PROCEDURA DI CIFRATURA:\n\n";
 
-    ticketLevels.forEach(function (level, index) {
-        ticket +=
-            "LIVELLO " +
-            (index + 1) +
-            ":\n";
-
-        if (level.method === "cesare") {
+    ticketLevels.forEach(
+        function (level, index) {
             ticket +=
-                "Metodo: Cesare\n";
-
-            ticket +=
-                "Chiave: " +
-                level.key +
-                "\n";
-        } else {
-            ticket +=
-                "Metodo: Base64\n";
-        }
-
-        ticket += "\n";
-
-        if (index < ticketLevels.length - 1) {
-            const transition =
-                transitions[index];
-
-            ticket +=
-                "NOISE TRA LIVELLO " +
+                "LIVELLO " +
                 (index + 1) +
-                " E LIVELLO " +
-                (index + 2) +
                 ":\n";
 
-            if (!transition) {
-                ticket +=
-                    "Nessun Noise.\n\n";
+            ticket +=
+                "Metodo: " +
+                (
+                    level.method === "cesare"
+                        ? "Cesare"
+                        : "Base64"
+                ) +
+                "\n";
 
-                return;
+            if (level.method === "cesare") {
+                ticket +=
+                    "Chiave: " +
+                    level.key +
+                    "\n";
             }
 
-            const noises =
-                transition.querySelectorAll(
-                    ".noise"
-                );
+            ticket += "\n";
 
-            if (noises.length === 0) {
+            if (
+                index <
+                ticketLevels.length - 1
+            ) {
                 ticket +=
-                    "Nessun Noise.\n\n";
+                    "NOISE TRA LIVELLO " +
+                    (index + 1) +
+                    " E LIVELLO " +
+                    (index + 2) +
+                    ":\n";
 
-                return;
-            }
+                const noises =
+                    transitions[index] || [];
 
-            noises.forEach(
-                function (noise, noiseIndex) {
-                    const data =
-                        readNoise(noise);
-
+                if (noises.length === 0) {
                     ticket +=
-                        "Noise " +
-                        (noiseIndex + 1) +
-                        ":\n";
+                        "Nessun Noise.\n\n";
+                } else {
+                    noises.forEach(
+                        function (noise, noiseIndex) {
+                            ticket +=
+                                "Noise " +
+                                (noiseIndex + 1) +
+                                ":\n";
 
-                    if (
-                        data.method ===
-                        "character"
-                    ) {
-                        ticket +=
-                            "Metodo: Noise lettera\n";
+                            if (
+                                noise.method ===
+                                "character"
+                            ) {
+                                ticket +=
+                                    "Metodo: Noise lettera\n";
 
-                        ticket +=
-                            "Carattere: " +
-                            data.character +
-                            "\n";
+                                ticket +=
+                                    "Carattere: " +
+                                    noise.character +
+                                    "\n";
 
-                        ticket +=
-                            "Intervallo: ogni " +
-                            data.interval +
-                            " caratteri\n\n";
-                    } else {
-                        ticket +=
-                            "Metodo: Noise parola\n";
+                                ticket +=
+                                    "Intervallo: ogni " +
+                                    noise.interval +
+                                    " caratteri\n\n";
+                            } else {
+                                ticket +=
+                                    "Metodo: Noise parola\n";
 
-                        ticket +=
-                            "Parola: " +
-                            data.word +
-                            "\n";
+                                ticket +=
+                                    "Parola: " +
+                                    noise.word +
+                                    "\n";
 
-                        ticket +=
-                            "Intervallo: ogni " +
-                            data.interval +
-                            " lettere\n\n";
-                    }
+                                ticket +=
+                                    "Intervallo: ogni " +
+                                    noise.interval +
+                                    " lettere\n\n";
+                            }
+                        }
+                    );
                 }
-            );
+            }
         }
-    });
+    );
 
     ticket +=
-        "RISULTATO CIFRATO:\n";
+        "RISULTATO FINALE:\n";
 
     ticket +=
         finalResult +
@@ -934,11 +940,6 @@ function createTicket(
     return ticket;
 }
 
-
-// ========================================
-// TICKET CIFRATURA
-// ========================================
-
 ticketButton.addEventListener(
     "click",
     function () {
@@ -950,10 +951,6 @@ takeTicket.addEventListener(
     "click",
     async function () {
         if (lastTicket === "") {
-            alert(
-                "Non è ancora disponibile un ticket di cifratura."
-            );
-
             return;
         }
 
@@ -963,7 +960,7 @@ takeTicket.addEventListener(
             );
 
             alert(
-                "Ticket copiato."
+                "Ticket copiato negli appunti."
             );
         } catch (error) {
             alert(
@@ -973,28 +970,31 @@ takeTicket.addEventListener(
     }
 );
 
-backFromTicket.addEventListener(
-    "click",
-    function () {
-        navigate("cifra");
-    }
-);
-
 
 // ========================================
-// COPIA RISULTATO
+// LIVELLI DECIFRA
 // ========================================
 
-async function copyTextToClipboard(text) {
-    if (
-        navigator.clipboard &&
-        window.isSecureContext
-    ) {
-        await navigator.clipboard.writeText(
-            text
+function updateDecryptKeyVisibility(level) {
+    const method =
+        level.querySelector(
+            ".methodSelect"
+        ).value;
+
+    const keyContainer =
+        level.querySelector(
+            ".keyContainer"
         );
 
-        return;
+    if (method === "cesare") {
+        keyContainer.classList.remove(
+            "hidden"
+        );
+    } else {
+        keyContainer.classList.add(
+            "hidden"
+        );
     }
+}
 
-    const textarea =
+function setupDecryptLevel(level) {
