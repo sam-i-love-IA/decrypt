@@ -2617,6 +2617,52 @@ function addDeskSetEditor(
                 }
 
                 level.remove();
+
+                const remainingLevels =
+                    Array.from(
+                        wrapper.querySelectorAll(".desk-set-level")
+                    ).map(function (remainingLevel, index) {
+                        const data = {
+                            method:
+                                remainingLevel.querySelector(".deskLevelMethod").value,
+                            key:
+                                remainingLevel.querySelector(".deskLevelKey").value,
+                            noises: []
+                        };
+
+                        const transitions =
+                            wrapper.querySelectorAll(".deskLevelNoise");
+
+                        if (index > 0 && transitions[index - 1]) {
+                            data.noises =
+                                Array.from(
+                                    transitions[index - 1].querySelectorAll(".desk-set-noise")
+                                ).map(function (noise) {
+                                    return {
+                                        method:
+                                            noise.querySelector(".deskNoiseMethod").value,
+                                        interval:
+                                            parseInt(
+                                                noise.querySelector(".deskNoiseInterval").value,
+                                                10
+                                            ) || 1,
+                                        character:
+                                            noise.querySelector(".deskNoiseCharacter").value,
+                                        word:
+                                            noise.querySelector(".deskNoiseWord").value
+                                    };
+                                });
+                        }
+
+                        return data;
+                    });
+
+                initialData = {
+                    title: wrapper.querySelector(".deskSetTitle").value,
+                    description: wrapper.querySelector(".deskSetDescription").value,
+                    levels: remainingLevels
+                };
+
                 renderDeskLevels();
                 updateDeskCode();
             }
@@ -2655,17 +2701,57 @@ function addDeskSetEditor(
         "click",
         function () {
             const currentLevels =
-                wrapper.querySelectorAll(".desk-set-level").length;
+                Array.from(
+                    wrapper.querySelectorAll(".desk-set-level")
+                ).map(function (level, index) {
+                    const data = {
+                        method:
+                            level.querySelector(".deskLevelMethod").value,
+                        key:
+                            level.querySelector(".deskLevelKey").value,
+                        noises: []
+                    };
 
-            addDeskLevelEditor(
-                {
-                    method: "cesare",
-                    key: ""
-                },
-                currentLevels
-            );
+                    const transitions =
+                        wrapper.querySelectorAll(".deskLevelNoise");
 
-            renderDeskLevelsFromDom();
+                    if (index > 0 && transitions[index - 1]) {
+                        data.noises =
+                            Array.from(
+                                transitions[index - 1].querySelectorAll(".desk-set-noise")
+                            ).map(function (noise) {
+                                return {
+                                    method:
+                                        noise.querySelector(".deskNoiseMethod").value,
+                                    interval:
+                                        parseInt(
+                                            noise.querySelector(".deskNoiseInterval").value,
+                                            10
+                                        ) || 1,
+                                    character:
+                                        noise.querySelector(".deskNoiseCharacter").value,
+                                    word:
+                                        noise.querySelector(".deskNoiseWord").value
+                                };
+                            });
+                    }
+
+                    return data;
+                });
+
+            currentLevels.push({
+                method: "cesare",
+                key: "",
+                noises: []
+            });
+
+            initialData = {
+                title: wrapper.querySelector(".deskSetTitle").value,
+                description: wrapper.querySelector(".deskSetDescription").value,
+                levels: currentLevels
+            };
+
+            renderDeskLevels();
             updateDeskCode();
         }
     );
